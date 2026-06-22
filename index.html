@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Text Tools — Muhammad Bilal</title>
+<style>
+  :root { --bg:#0a0f1f; --accent:#9cc7e0; --text:#e8eef7; --muted:#9fb0c7; --card:rgba(255,255,255,.04); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Segoe UI',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  header { padding:20px 40px; border-bottom:1px solid rgba(255,255,255,.07); display:flex; align-items:center; justify-content:space-between; }
+  .logo { font-size:22px; font-weight:800; color:var(--accent); }
+  .badge { background:rgba(94,159,196,.15); color:var(--accent); padding:6px 14px; border-radius:20px; font-size:13px; font-weight:700; border:1px solid rgba(94,159,196,.3); }
+  main { max-width:900px; margin:0 auto; padding:40px 20px; }
+  h1 { font-size:clamp(32px,6vw,56px); font-weight:800; text-align:center; margin-bottom:10px; }
+  h1 span { background:linear-gradient(135deg,#e8eef7,#9cc7e0,#5e9fc4); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .subtitle { text-align:center; color:var(--muted); font-size:17px; margin-bottom:48px; }
+  .tabs { display:flex; gap:10px; margin-bottom:28px; flex-wrap:wrap; }
+  .tab { padding:10px 22px; border-radius:25px; border:1px solid rgba(255,255,255,.12); background:var(--card); color:var(--muted); font-size:14px; font-weight:600; cursor:pointer; transition:.2s; }
+  .tab.active, .tab:hover { background:rgba(94,159,196,.2); border-color:var(--accent); color:var(--accent); }
+  .tool-box { background:var(--card); border:1px solid rgba(255,255,255,.09); border-radius:20px; padding:28px; }
+  .tool-box label { display:block; color:var(--muted); font-size:14px; font-weight:600; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; }
+  textarea { width:100%; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:12px; padding:16px; color:var(--text); font-size:15px; resize:vertical; min-height:130px; font-family:inherit; outline:none; transition:.2s; }
+  textarea:focus { border-color:var(--accent); }
+  .btn-row { display:flex; gap:12px; margin-top:16px; flex-wrap:wrap; }
+  .btn { padding:12px 28px; border:none; border-radius:25px; font-size:15px; font-weight:700; cursor:pointer; transition:.2s; }
+  .btn-primary { background:linear-gradient(135deg,#9cc7e0,#5e9fc4); color:#08263a; }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(94,159,196,.4); }
+  .btn-secondary { background:rgba(255,255,255,.06); color:var(--text); border:1px solid rgba(255,255,255,.12); }
+  .btn-secondary:hover { background:rgba(255,255,255,.12); }
+  .output { margin-top:20px; background:rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:18px; min-height:80px; color:var(--text); font-size:15px; line-height:1.7; white-space:pre-wrap; display:none; }
+  .output.show { display:block; }
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:20px; }
+  .stat-chip { background:var(--card); border:1px solid rgba(255,255,255,.09); border-radius:12px; padding:14px; text-align:center; }
+  .stat-chip .n { font-size:28px; font-weight:800; color:var(--accent); }
+  .stat-chip .l { color:var(--muted); font-size:12px; }
+  footer { text-align:center; padding:30px; color:var(--muted); font-size:13px; border-top:1px solid rgba(255,255,255,.06); margin-top:60px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🤖 AI Text Tools</div>
+  <div class="badge">⚡ Powered by JavaScript</div>
+</header>
+<main>
+  <h1><span>AI-Assisted</span> Text Tools</h1>
+  <p class="subtitle">Smart text utilities built with AI assistance — Muhammad Bilal</p>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('counter')">📊 Word Counter</div>
+    <div class="tab" onclick="switchTab('case')">🔤 Case Converter</div>
+    <div class="tab" onclick="switchTab('reverse')">🔁 Text Reverser</div>
+    <div class="tab" onclick="switchTab('password')">🔐 Password Gen</div>
+  </div>
+
+  <!-- WORD COUNTER -->
+  <div class="tool-box" id="tab-counter">
+    <label>Enter your text:</label>
+    <textarea id="counter-input" placeholder="Type or paste your text here..." oninput="countWords()"></textarea>
+    <div class="stats-row">
+      <div class="stat-chip"><div class="n" id="word-count">0</div><div class="l">Words</div></div>
+      <div class="stat-chip"><div class="n" id="char-count">0</div><div class="l">Characters</div></div>
+      <div class="stat-chip"><div class="n" id="sent-count">0</div><div class="l">Sentences</div></div>
+    </div>
+  </div>
+
+  <!-- CASE CONVERTER -->
+  <div class="tool-box" id="tab-case" style="display:none">
+    <label>Enter text to convert:</label>
+    <textarea id="case-input" placeholder="Type your text here..."></textarea>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="convertCase('upper')">UPPERCASE</button>
+      <button class="btn btn-secondary" onclick="convertCase('lower')">lowercase</button>
+      <button class="btn btn-secondary" onclick="convertCase('title')">Title Case</button>
+      <button class="btn btn-secondary" onclick="convertCase('sentence')">Sentence case</button>
+    </div>
+    <div class="output" id="case-output"></div>
+  </div>
+
+  <!-- TEXT REVERSER -->
+  <div class="tool-box" id="tab-reverse" style="display:none">
+    <label>Enter text to reverse:</label>
+    <textarea id="reverse-input" placeholder="Type your text here..."></textarea>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="reverseText('words')">Reverse Words</button>
+      <button class="btn btn-secondary" onclick="reverseText('chars')">Reverse Characters</button>
+      <button class="btn btn-secondary" onclick="reverseText('lines')">Reverse Lines</button>
+    </div>
+    <div class="output" id="reverse-output"></div>
+  </div>
+
+  <!-- PASSWORD GEN -->
+  <div class="tool-box" id="tab-password" style="display:none">
+    <label>Password Generator:</label>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;">
+      <div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:6px">Length: <span id="len-val">16</span></div>
+        <input type="range" min="8" max="32" value="16" oninput="document.getElementById('len-val').textContent=this.value" id="pwd-len" style="accent-color:#9cc7e0">
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px;text-transform:none;letter-spacing:0"><input type="checkbox" id="use-sym" checked> Symbols</label>
+      <label style="display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px;text-transform:none;letter-spacing:0"><input type="checkbox" id="use-num" checked> Numbers</label>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="genPassword()">🔐 Generate</button>
+      <button class="btn btn-secondary" onclick="copyPwd()">📋 Copy</button>
+    </div>
+    <div class="output" id="pwd-output"></div>
+  </div>
+</main>
+<footer>&copy; 2025 Muhammad Bilal — Web Developer & AI Enthusiast</footer>
+
+<script>
+function switchTab(name) {
+  ['counter','case','reverse','password'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['counter','case','reverse','password'][i] === name);
+  });
+}
+
+function countWords() {
+  const t = document.getElementById('counter-input').value;
+  document.getElementById('word-count').textContent = t.trim() ? t.trim().split(/\s+/).length : 0;
+  document.getElementById('char-count').textContent = t.length;
+  document.getElementById('sent-count').textContent = t.trim() ? (t.match(/[.!?]+/g)||[]).length : 0;
+}
+
+function convertCase(type) {
+  const t = document.getElementById('case-input').value;
+  let result = '';
+  if (type === 'upper') result = t.toUpperCase();
+  else if (type === 'lower') result = t.toLowerCase();
+  else if (type === 'title') result = t.replace(/\w\S*/g, w => w[0].toUpperCase() + w.slice(1).toLowerCase());
+  else result = t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+  const o = document.getElementById('case-output');
+  o.textContent = result; o.classList.add('show');
+}
+
+function reverseText(type) {
+  const t = document.getElementById('reverse-input').value;
+  let result = '';
+  if (type === 'words') result = t.split(' ').reverse().join(' ');
+  else if (type === 'chars') result = t.split('').reverse().join('');
+  else result = t.split('\n').reverse().join('\n');
+  const o = document.getElementById('reverse-output');
+  o.textContent = result; o.classList.add('show');
+}
+
+function genPassword() {
+  const len = document.getElementById('pwd-len').value;
+  const sym = document.getElementById('use-sym').checked;
+  const num = document.getElementById('use-num').checked;
+  let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if (num) chars += '0123456789';
+  if (sym) chars += '!@#$%^&*()_+-=';
+  let pwd = Array.from({length: parseInt(len)}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+  const o = document.getElementById('pwd-output');
+  o.textContent = pwd; o.classList.add('show');
+}
+
+function copyPwd() {
+  const t = document.getElementById('pwd-output').textContent;
+  if (t) { navigator.clipboard.writeText(t); alert('Password copied!'); }
+}
+</script>
+</body>
+</html>
